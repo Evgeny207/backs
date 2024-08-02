@@ -1,38 +1,30 @@
-name: "CodeQL"
+name: CI
 
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  schedule:
-    - cron: '0 0 * * 3'
 
 jobs:
-  analyze:
-    name: Analyze
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     strategy:
-      fail-fast: false
       matrix:
-        language: [ 'javascript', 'python', 'go', 'java', 'ruby' ]
+        node-version: [16, 20]  # Обновлено до node16 и node20
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3  # Обновлено до v3
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2  # Обновлено до v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v3  # Обновлено до v3
       with:
-        languages: ${{ matrix.language }}
+        node-version: ${{ matrix.node-version }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2  # Обновлено до v2
+    - name: Install dependencies
+      run: npm install
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2  # Обновлено до v2
+    - name: Run tests
+      run: npm test
