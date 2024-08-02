@@ -8,16 +8,23 @@ on:
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [16, 20]  # Обновлено до node16 и node20
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-          registry: ghcr.io
-          repository: netology-code/necommerce-backend
-          tag_with_ref: true
+    - name: Checkout repository
+      uses: actions/checkout@v3  # Обновлено до v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3  # Обновлено до v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
